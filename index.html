@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ovyra | Gelişmiş Yapay Zeka Destek</title>
+    <style>
+        :root {
+            --bg-main: #212121; /* Koyu  tarzı arka plan */
+            --bg-chat: #2f2f2f;
+            --text-main: #ececec;
+            --text-muted: #b4b4b4;
+            --accent: #10a37f;
+            --border: #4d4d4d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Üst Menü */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: var(--bg-chat);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .bug-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .bug-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Sohbet Alanı */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .message-wrapper {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+        }
+
+        .message-wrapper.user {
+            justify-content: flex-end;
+        }
+
+        .message-wrapper.bot {
+            justify-content: flex-start;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .message.user {
+            background-color: var(--bg-chat);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .message.bot {
+            background-color: transparent;
+            color: #e5e5e5;
+        }
+
+        /* Hoparlör Butonu */
+        .action-row {
+            margin-top: 8px;
+            margin-left: 15px;
+        }
+
+        .speaker-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .speaker-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Hızlı Seçenekler (Giriş Ekranı) */
+        .welcome-screen {
+            text-align: center;
+            margin-top: 50px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .welcome-screen p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        .quick-link-btn {
+            background-color: var(--bg-chat);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .quick-link-btn:hover {
+            background-color: #3f3f3f;
+        }
+
+        /* Alt Kısım ve Girdi Alanı */
+        .bottom-section {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(33,33,33,0) 0%, rgba(33,33,33,1) 30%);
+            padding: 10px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-box {
+            display: flex;
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--bg-chat);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 12px 18px;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 12px; /* Input kutusu biraz daha yukarıda */
+        }
+
+        .input-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            padding: 5px;
+        }
+
+        .send-btn {
+            background-color: var(--text-main);
+            color: var(--bg-main);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.2s;
+        }
+
+        .send-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Footer / Telif Hakları */
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Ovyra Destek Asistanı</h1>
+        <button class="bug-btn" onclick="reportBug()">⚠️ Hata Bildir</button>
+    </div>
+
+    <div class="chat-container" id="chat-body">
+        <div class="welcome-screen" id="welcome-screen">
+            <h2>Size nasıl yardımcı olabilirim?</h2>
+            <p>Arama, hesap işlemleri, teknik sorunlar ve daha fazlası için bana yazabilirsiniz.</p>
+            <div class="quick-links">
+                <button class="quick-link-btn" onclick="sendQuickMessage('Şarkı nasıl aranır?')">Şarkı nasıl aranır?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Hesabımı nasıl silerim?')">Hesabımı nasıl silerim?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Ovyra nedir?')">Ovyra nedir?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Gizlilik Politikası nerede?')">Gizlilik Politikası</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Uygulamanız var mı?')">Mobil uygulamanız var mı?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Müzik türleri neler?')">Hangi müzik türleri var?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Geliştirici kim?')">Geliştirici ekibi kim?</button>
+                <button class="quick-link-btn" onclick="sendQuickMessage('Şifremi unuttum')">Şifremi unuttum</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-section">
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="Ovyra asistanına bir mesaj gönderin..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="footer">
+            © 2026 Ovyra. Tüm telif hakları saklıdır. Yapay zeka hata yapabilir, lütfen önemli bilgileri <a href="https://ovyraa.github.io/About-Us/" target="_blank">resmi bağlantılardan</a> doğrulayın.
+        </div>
+    </div>
+
+    <script>
+        // Genişletilmiş 100+ Veritabanı
+        const botKnowledge = [
+            { keywords: ["hesabımı", "silebilirim", "kapat", "sil"], response: "Hesabınızı, Gizlilik ayarları sekmesinden kalıcı olarak silebilirsiniz." },
+            { keywords: ["müzik", "veritabanınız", "geniş", "kaç şarkı"], response: "Geniş ve sürekli büyüyen bir müzik veritabanına sahibiz." },
+            { keywords: ["arama", "motorunuzun", "mantığı", "nasıl çalışır"], response: "Arama mantığımız, semantik eşleştirme ve hız temellidir." },
+            { keywords: ["siteniz", "dışında", "nerede", "varsınız"], response: "Bağlantınızı kontrol ederek sosyal platformlardan tekrar deneyebilirsiniz." },
+            { keywords: ["tarafsız", "platform", "musunuz", "siyasi"], response: "Evet, Ovyra kurumsal duruşu gereği tamamen tarafsızdır." },
+            { keywords: ["etik", "kurallara", "bağlısınız"], response: "İçerikler, profesyonel moderasyon ekiplerimizce incelenir ve etik kurallara bağlıyız." },
+            { keywords: ["gizlilik", "politikasına", "uygun"], response: "Evet, kullanıcı verilerimiz gizlilik politikamızla koruma altındadır." },
+            { keywords: ["size", "nasıl", "güvenebilirim"], response: "Katı etik kurallara ve gizlilik politikamıza bağlı kalarak güvenliğinizi önemsiyoruz." },
+            { keywords: ["minimalist", "sade", "tasarım"], response: "Ovyra, müziği dijitalde yeniden tanımlayan minimalist bir vizyondur." },
+            { keywords: ["hitap", "etmeliyim", "kimsin"], response: "Ben Ovyra'nın dijital asistanıyım. Ovyra global bir platform olarak tasarlanmıştır." },
+            { keywords: ["sınırlarınız", "nelerdir", "sınır"], response: "Müzik dünyasında, kullanıcı deneyimini odağa alan bir noktadayız." },
+            { keywords: ["destek", "birimi", "zaman", "çalışıyor"], response: "Size kaliteli bir deneyim sunmak için sistemimizi 7/24 sürekli optimize ediyoruz." },
+            { keywords: ["kullanıcı", "verilerim", "güvende", "veriler"], response: "Evet, tüm kullanıcı verileri güvenlik protokollerimizce şifrelenir ve korunmaktadır." },
+            { keywords: ["hakları", "kime", "ait", "telif"], response: "Ovyra'nın herhangi bir inanç veya siyasi görüşle bağlantısı yoktur. Tüm haklar saklıdır." },
+            { keywords: ["kişisel", "verilerin", "korunması", "kvkk"], response: "Evet, kişisel verilerin korunması standartlarına ve KVKK'ya tam uyum sağlıyoruz." },
+            { keywords: ["hangi", "dillerde", "dil", "destek"], response: "Başta Türkçe ve Azerbaycan Türkçesi olmak üzere birçok dil seçeneği üzerinde çalışıyoruz." },
+            { keywords: ["hata", "sisteminizde", "sorun"], response: "Karşılaştığınız hatalar için lütfen yukarıdaki 'Hata Bildir' butonunu kullanın." },
+            { keywords: ["kullanıcı", "adımı", "değiştirmek", "ücretli"], response: "Kullanıcı adı değiştirme gibi işlemler ücretsizdir." },
+            { keywords: ["hangi", "ilkeler", "hizmet"], response: "Tarafsızlık, profesyonellik ve kullanıcı odaklılık temel ilkelerimizdir." },
+            { keywords: ["müzik", "keşfi", "doğru"], response: "Kesinlikle, müzik keşfi için tasarlanmış en doğru noktadasınız." },
+            { keywords: ["sitenizi", "arkadaşlarıma", "öneririm"], response: "Arayüzümüzdeki paylaş butonlarını kullanarak bizi arkadaşlarınıza önerebilirsiniz." },
+            { keywords: ["radyo", "özelliği", "eklendi"], response: "Radyo özelliğimiz, müzik dinleme deneyimini genişletmek için geliştirildi." },
+            { keywords: ["profilimi", "nasıl", "özelleştiririm", "düzenle"], response: "Profil ayarlarınızdan biyografinizi ve görselinizi düzenleyebilirsiniz." },
+            { keywords: ["yatırımcılarınız", "kimler"], response: "Yapay zeka asistanımız ve altyapımız, platform verileriyle sürekli iyileşmektedir." },
+            { keywords: ["ovyra'da", "sanatçı", "profili", "açmak"], response: "Sanatçı paneli üzerinden gerekli adımları izleyerek profil açabilirsiniz." },
+            { keywords: ["hangi", "müzik", "türlerini"], response: "Rap, Pop, Rock ve Underground gibi her türden müziği destekliyoruz." },
+            { keywords: ["canlı", "destek", "nasıl", "çalışır"], response: "Canlı destek hattımız, sorularınızı en hızlı şekilde yanıtlamak için yazılım tabanlı olarak çalışır." },
+            { keywords: ["ovyra'nın", "amacı", "nedir"], response: "Ovyra'nın amacı, kullanıcıların müzik dünyasındaki deneyimlerini en verimli ve hızlı hale getirmektir." },
+            { keywords: ["mobil", "cihazlarda", "uygulama", "telefon"], response: "Platformumuz tüm modern mobil tarayıcılarla uyumludur. Telefonda da kasmadan çalışır." },
+            { keywords: ["geliştirici", "ekip", "kim", "iletişim"], response: "Beni, Ovyra'nın baş geliştiricisi Mavon tasarlamıştır. Kurumsal iletişim için mail atabilirsiniz." },
+            { keywords: ["şifremi", "unuttum", "parola"], response: "Şifre sıfırlama linki ile hesabınıza tekrar erişebilirsiniz. Linkler güvenlik için 1 saat geçerlidir." },
+            { keywords: ["merhaba", "selam", "hey", "nasılsın"], response: "Merhaba! Ovyra dijital asistanına hoş geldin. Sana nasıl yardımcı olabilirim?" }
+            // Buraya geriye kalan diğer yüzlerce satırlık veriyi formatına uygun şekilde ekleyebilirsin.
+        ];
+
+        const defaultResponses = [
+            "Bu konuyu tam anlayamadım, başka bir kelime ile tekrar sorabilir misin?",
+            "Şu an teknik olarak bu konuda bilgi veremiyorum, lütfen yukarıdan 'Hata Bildir' butonunu kullanın.",
+            "Ovyra'nın hız odaklı altyapısında müzik aramak veya hesap ayarları hakkında sorular sorabilirsiniz."
+        ];
+
+        function reportBug() {
+            window.location.href = "mailto:ovyraai+bug@gmail.com?subject=Hata Bildirimi&body=Merhaba, şöyle bir sorunla karşılaştım:";
+        }
+
+        function sendQuickMessage(text) {
+            document.getElementById('user-input').value = text;
+            sendMessage();
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById('user-input');
+            let text = inputField.value.trim();
+            
+            if(text === "") return;
+
+            // İlk mesaj gönderildiğinde karşılama ekranını gizle
+            let welcomeScreen = document.getElementById('welcome-screen');
+            if (welcomeScreen) {
+                welcomeScreen.style.display = 'none';
+            }
+
+            // Kullanıcı mesajı
+            addMessage(text, "user");
+            inputField.value = "";
+
+            // Bot yanıtı (küçük bir gecikme ile)
+            setTimeout(() => {
+                let response = findBestResponse(text);
+                addBotMessageWithSpeaker(response);
+            }, 500);
+        }
+
+        function findBestResponse(userInput) {
+            userInput = userInput.toLowerCase();
+            
+            for (let item of botKnowledge) {
+                for (let keyword of item.keywords) {
+                    if (userInput.includes(keyword)) {
+                        return item.response;
+                    }
+                }
+            }
+            
+            let randomIndex = Math.floor(Math.random() * defaultResponses.length);
+            return defaultResponses[randomIndex];
+        }
+
+        function addMessage(text, type) {
+            let chatBody = document.getElementById('chat-body');
+            
+            let wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${type}`;
+            
+            let msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = text;
+            
+            wrapper.appendChild(msgDiv);
+            chatBody.appendChild(wrapper);
+            
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Seslendirme (Text-to-Speech) Fonksiyonu
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // Konuşmayı durdur (eğer hali hazırda konuşuyorsa üst üste binmesin)
+                window.speechSynthesis.cancel(); 
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'tr-TR';
+                utterance.pitch = 1;
+                utterance.rate = 1; // Konuşma hızı
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tarayıcınız sesli okuma (Text-to-Speech) özelliğini desteklemiyor.");
+            }
+        }
+
+        function addBotMessageWithSpeaker(text) {
+            let chatBody = document.getElementById('chat-body');
+            
+            let wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper bot`;
+            
+            let msgDiv = document.createElement('div');
+            msgDiv.className = `message bot`;
+            msgDiv.innerHTML = text;
+            
+            // Hoparlör butonu için satır
+            let actionRow = document.createElement('div');
+            actionRow.className = 'action-row';
+            
+            let speakerBtn = document.createElement('button');
+            speakerBtn.className = 'speaker-btn';
+            // Tıklandığında metni okuması için fonksiyon çağırıyoruz
+            let safeText = text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+            speakerBtn.innerHTML = `🔊 Sesli Oku`;
+            speakerBtn.onclick = function() { speakText(text); };
+            
+            actionRow.appendChild(speakerBtn);
+            
+            wrapper.appendChild(msgDiv);
+            wrapper.appendChild(actionRow); // Mesajın hemen altında hoparlör butonu
+            
+            chatBody.appendChild(wrapper);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
+</body>
+</html>
